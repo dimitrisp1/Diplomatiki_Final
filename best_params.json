@@ -1,0 +1,18 @@
+{
+  "best_params": {
+    "n_neighbors": 11,
+    "n_components": 13,
+    "min_dist": 0.014138059874308344,
+    "min_cluster_size": 32,
+    "min_samples": 4
+  },
+  "best_value": 0.8080674876289534,
+  "best_attrs": {
+    "n_clusters": 116,
+    "noise_pct": 15.45,
+    "coherence": 0.8126,
+    "stability": 0.0892,
+    "median_cluster_size": 69.5,
+    "score": 0.8081
+  }
+}
