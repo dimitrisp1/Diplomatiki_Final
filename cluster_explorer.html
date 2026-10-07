@@ -23,7 +23,9 @@ label{margin-right:16px}select,input{font:inherit;padding:6px}canvas{background:
 <option value="">All topics</option>
 </select>
 </label>
-<label>Cluster <input id="cluster" type="number" placeholder="All" style="width:90px">
+<label>Cluster <select id="cluster" style="max-width:460px">
+<option value="">All available clusters</option>
+</select>
 </label>
 <label>
 <input id="noise" type="checkbox" checked> Show noise</label>
@@ -39,6 +41,30 @@ for(const m of majors){
     o.value=m;
     o.textContent=m;
     topic.appendChild(o)
+}
+const clusterInfo=new Map();
+for(const p of pts){
+    if(!clusterInfo.has(p[4]))clusterInfo.set(p[4],p[6]);
+}
+function updateClusterOptions(){
+    const previous=cluster.value;
+    const available=[...new Set(pts
+        .filter(p=>(!topic.value||p[5]===topic.value)&&(noise.checked||p[4]!==-1))
+        .map(p=>p[4]))].sort((a,b)=>a-b);
+    cluster.replaceChildren();
+    const all=document.createElement('option');
+    all.value='';
+    all.textContent=available.length?'All available clusters':'No available clusters';
+    cluster.appendChild(all);
+    for(const id of available){
+        const option=document.createElement('option');
+        option.value=String(id);
+        option.textContent=id===-1?'Noise (−1)':`${id} — ${clusterInfo.get(id)}`;
+        cluster.appendChild(option);
+    }
+    cluster.value=available.some(id=>String(id)===previous)?previous:'';
+    cluster.disabled=available.length===0;
+    details.textContent='Hover over a point. The file contains coordinates and topic labels; message bodies are excluded.';
 }
 let displayed=[];
 function draw(){
@@ -89,8 +115,13 @@ Specific: ${p[6]}`
     }
 }
 );
-for(const e of [view,color,topic,cluster,noise])e.addEventListener('input',draw);
+for(const e of [view,color,cluster])e.addEventListener('input',draw);
+for(const e of [topic,noise])e.addEventListener('input',()=>{
+    updateClusterOptions();
+    draw();
+});
 window.addEventListener('resize',draw);
+updateClusterOptions();
 draw();
 </script>
 </html>
